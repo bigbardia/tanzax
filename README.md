@@ -1,3 +1,8 @@
 # tanzax
-تارنمایی برای برنامه نویسان
-پلاک عمومی جنو
+
+Persian social media for programmers
+
+## Contributors
+  
+  Bradia Amirian
+  Shayan Azizi
