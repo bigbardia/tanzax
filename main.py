@@ -68,6 +68,11 @@ def get_current_user():
 def allowed_pic_extension(filename : str) -> bool:
     return "." in filename and filename.rsplit(".",1)[1].lower() in pic_extensions
 
+def valid_characters(username : str):
+    for i in username:
+        if i not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRTUVWXYZ0123456789":
+            return False
+    return True
 
 #-----------------------------------------------------------
 #MODELS
@@ -118,8 +123,13 @@ def signup():
         if not username:
             errors.append("اقای محرتم!!!!!یوزرنیم لازم میباشد")
         
+        
+        elif not valid_characters(username):
+            errors.append("کاراکتر های غلط")
+        
         elif User.query.filter_by(username = username).first():
             errors.append("یوزرنیم الردی در پایاگاه دیتا وجود دارد")
+        
 
         if not password:
             errors.append("پسسورد الزمامیست۱")
