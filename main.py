@@ -1,11 +1,13 @@
 from functools import wraps
+from pydoc import plain
 from flask import (
     Flask,
     render_template,
     request,
     flash,
     redirect,
-    session
+    session,
+    url_for,
 )
 from flask_wtf import CSRFProtect
 import uuid
@@ -34,8 +36,11 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args , **kwargs):
         user_id = session.get("user_id", None)
-        if not user_id:
-            return redirect("/signup")
+        user = User.query.get(user_id)
+        if not user_id or not user:
+            session.clear()
+            session.permanent = False
+            return redirect("/login")
         return func(*args , **kwargs)
     return wrapper
 
@@ -50,6 +55,11 @@ def logout_user():
 
 def int_time():
     return int(time())
+
+
+def get_current_user():
+    user_id = session.get("user_id")
+    return User.query.get(user_id)
 
 
 #-----------------------------------------------------------
@@ -80,10 +90,6 @@ class User(db.Model):
     
     def verify_password(self , password) -> bool:
         return bcrypt.verify(password , self.hashed_password)
-
-
-
-
 
 
 #----------------
@@ -144,17 +150,34 @@ def login():
 
 
 @app.route("/profile" , methods = ["GET","POST"])
+@login_required
 def edit_profile():
+
     if request.method == "GET":
         return render_template("profile.html")
 
     elif request.method == "POST":
+        user = get_current_user()
         plain_text = request.form.get("plain_text" , None)
-
+        plain_text = escape_javascript(plain_text)
+        user.bio = plain_text
+        db.session.commit()
         return redirect("/profile")
 
+@app.route("/profile/<_id>")
+def profile_view(_id):
+    if request.method == "GET":
+        user = User.query.get_or_404(_id)
+        context = {}
+        if request.args.get("html",None):
+            context["html"] = True
+            context["bio"] = user.bio
+            return render_template("profile_view.html",**context)
 
-
+        context["bio_url"] = url_for("profile_view",_id = _id) +"?html=true"
+        context["username"]= user.username
+        context["timestamp"] = user.timestamp
+        return render_template("profile_view.html" , **context)
 
 @app.route("/logout")
 def logout():
@@ -175,4 +198,3 @@ def index():
 if __name__ == "__main__":
     db.create_all()
     app.run(debug = True , threaded = True)
-
