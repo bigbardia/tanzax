@@ -1,5 +1,4 @@
 from functools import wraps
-from pydoc import plain
 from flask import (
     Flask,
     render_template,
@@ -8,6 +7,7 @@ from flask import (
     redirect,
     session,
     url_for,
+    send_from_directory
 )
 from flask_wtf import CSRFProtect
 import uuid
@@ -26,9 +26,14 @@ app.secret_key = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
 app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
+app.config["UPLOAD_FOLDER"] = "uploads"
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
 db = SQLAlchemy(app = app)
 csrf = CSRFProtect(app=app)
 
+
+file_extensions = {"py","cpp" ,"pas","pdf","png","jpg","gif","jpeg","jfif" , "zip"}
+pic_extensions = {"png" , "jpg","gif","jpeg","jfif"}
 
 
 #-----
@@ -38,8 +43,7 @@ def login_required(func):
         user_id = session.get("user_id", None)
         user = User.query.get(user_id)
         if not user_id or not user:
-            session.clear()
-            session.permanent = False
+            logout_user()
             return redirect("/login")
         return func(*args , **kwargs)
     return wrapper
@@ -61,6 +65,9 @@ def get_current_user():
     user_id = session.get("user_id")
     return User.query.get(user_id)
 
+def allowed_pic_extension(filename : str) -> bool:
+    return "." in filename and filename.rsplit(".",1)[1].lower() in pic_extensions
+
 
 #-----------------------------------------------------------
 #MODELS
@@ -75,12 +82,13 @@ class User(db.Model):
     hashed_password = db.Column(db.String(50) , nullable = False)
     timestamp = db.Column(db.Integer, default=int_time , nullable = False)
     bio = db.Column(db.Text , nullable = True)
+    image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpg")
 
-
-    def __init__(self , username , password , bio=None):
+    def __init__(self , username , password , bio="" , image_url="/media/default.jpg"):
         self.username = username
         self.hashed_password = self.hash_password(password)        
         self.bio = bio
+        self.image_url = image_url
     
     def __repr__(self):
         return f"<User {self.username}>"
@@ -90,6 +98,8 @@ class User(db.Model):
     
     def verify_password(self , password) -> bool:
         return bcrypt.verify(password , self.hashed_password)
+
+
 
 
 #----------------
@@ -149,34 +159,16 @@ def login():
         return redirect("/")
 
 
-@app.route("/profile" , methods = ["GET","POST"])
-@login_required
-def edit_profile():
-
-    if request.method == "GET":
-        return render_template("profile.html")
-
-    elif request.method == "POST":
-        user = get_current_user()
-        plain_text = request.form.get("plain_text" , None)
-        plain_text = escape_javascript(plain_text)
-        user.bio = plain_text
-        db.session.commit()
-        return redirect("/profile")
-
 @app.route("/profile/<_id>")
 def profile_view(_id):
     if request.method == "GET":
         user = User.query.get_or_404(_id)
-        context = {}
+        context = {"user" : user}
         if request.args.get("html",None):
             context["html"] = True
-            context["bio"] = user.bio
             return render_template("profile_view.html",**context)
 
         context["bio_url"] = url_for("profile_view",_id = _id) +"?html=true"
-        context["username"]= user.username
-        context["timestamp"] = user.timestamp
         return render_template("profile_view.html" , **context)
 
 @app.route("/logout")
@@ -195,6 +187,46 @@ def index():
     return render_template("index.html")
 
 
+
+@app.route("/profile" , methods = ["GET","POST"])
+@login_required
+def edit_profile():
+
+    if request.method == "GET":
+        return render_template("profile.html" , user = get_current_user())
+
+    elif request.method == "POST":
+
+        user = get_current_user()
+        plain_text = request.form.get("plain_text" , None)
+        image_url = user.image_url
+        file = request.files.get("pic" , None)
+        if plain_text:
+            plain_text = escape_javascript(plain_text)
+        if file:
+            if not allowed_pic_extension(file.filename):
+                flash("پسوند فیل قابل قبول نیست")
+                return redirect("/profile")
+            file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"] , file.filename))
+            image_url = f"/media/{file.filename}"
+
+
+        user.bio = plain_text
+        user.image_url = image_url
+        db.session.commit()
+        return redirect("/profile")
+
+
+
+
+@app.route('/media/<name>')
+def view_file(name):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+
+
 if __name__ == "__main__":
     db.create_all()
     app.run(debug = True , threaded = True)
+
+
