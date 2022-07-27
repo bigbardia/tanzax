@@ -1,4 +1,4 @@
-<form method = "post">
+<!-- <form method = "post">
 
     <input type="hidden" name = "csrf_token" value="{{ csrf_token() }}" />
     <input type="text"   name="username"  value="" required />
@@ -8,17 +8,89 @@
         SUBMIT
 
     </button>
-</form>
+</form> -->
 
+{% extends 'base.html' %}
 
-<br>
-<br>
+{% block head %}
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for msg in messages %}
-            {{msg}}
-            <br>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+    <link rel="stylesheet" href="{{ url_for('static' , filename = 'css/signup.css') }}"> 
+
+{% endblock %}
+
+{% block body %}
+    
+    {% include 'navbar.html' %}
+
+    <section class="">
+        <div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: #011931">
+          <div class="container">
+            <div class="row gx-lg-5 align-items-center">
+              <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="my-5 display-2 fw-bold ls-tight text-light">
+                  بهترین مکان برای <br />
+                  <span class="text-primary">اشتراک پست ها</span>
+                </h1>
+                <p style="color: hsl(217, 10%, 50.8%)">
+                    تنذعکس یه شبکه اجتماعیه که شما میتونید پست های مختلفی در اون به اشتراک بذارید و از اخبار بقیه کاربر ها مطلع بشین!
+                </p>
+              </div>
+      
+              <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="card bg-dark post-col">
+                  <div class="card-body py-5 px-md-5">
+                    <form method="post">   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                      <div class="form-outline mb-4">
+                          <label class="form-label text-light" for="form3Example3">نام کاربری</label>   
+                        <input type="text" id="form3Example3" class="form-control" name="username" />
+                      </div>
+      
+
+                      <div class="form-outline mb-4">
+                          <label class="form-label text-light" for="form3Example4">رمز</label> 
+                        <input type="password" id="form3Example4" class="form-control" name="password" />
+                      </div>
+
+                      <div class="text-center text-danger">
+                        {% with messages = get_flashed_messages() %}
+                          {% if messages %}
+                        <p>
+                            اطلاعات شما صحت ندارد.
+                        </p>
+                            {% endif %}
+                          {% endwith %}
+                      </div>
+
+                    <div class="text-center my-4">
+                      <button type="submit" class="btn btn-primary btn-block mb-4">
+                       ورود
+                      </button>
+                    </div>
+      
+                      <div class="text-center">
+                        <p class="text-light">راه های دیگر برای ورود:</p>
+
+      
+                        <button type="button" class="btn signup-icons  btn-link btn-floating mx-1">
+                          <i class="fab fa-google"></i>
+                        </button>
+      
+                        <button type="button" class="btn  signup-icons btn-link btn-floating mx-1">
+                          <i class="fab fa-twitter"></i>
+                        </button>
+      
+                        <button type="button" class="btn  signup-icons btn-link btn-floating mx-1">
+                          <i class="fab fa-github"></i>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+{% endblock %}
