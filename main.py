@@ -7,10 +7,13 @@ from flask import (
     session
 )
 from flask_wtf import CSRFProtect
+import uuid
 import os
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import bcrypt
 from dotenv import load_dotenv
+from time import time
+from xss import escape_javascript
 
 
 load_dotenv()
@@ -22,15 +25,43 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
 app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
 db = SQLAlchemy(app = app)
 csrf = CSRFProtect(app=app)
+
+
+
+#-----
+def login_required(func):
+    def wrapper(*args , **kwargs):
+        user_id = session.get("user_id", None)
+        if not user_id:
+            return redirect("/signup")
+        return func(*args , **kwargs)
+    return wrapper
+
+
+def login_user(user):
+    session.permanent = True
+    session["user_id"] = user._id
+    
+def logout_user():
+    session.clear()
+    session.permanent = False
+
+def int_time():
+    return int(time())
+
+
 #-----------------------------------------------------------
 #MODELS
 
 
 class User(db.Model):
 
+    __tablename__ = "users"
+
     _id = db.Column(db.Integer , primary_key = True)
     username = db.Column(db.String(50), nullable = False)
     hashed_password = db.Column(db.String(50) , nullable = False)
+    timestamp = db.Column(db.Integer, default=int_time , nullable = False)
     bio = db.Column(db.Text , nullable = True)
 
 
@@ -49,23 +80,8 @@ class User(db.Model):
         return bcrypt.verify(password , self.hashed_password)
 
 
-#-----
-def login_required(func):
-    def wrapper(*args , **kwargs):
-        user_id = session.get("user_id", None)
-        if not user_id:
-            return redirect("/signup")
-        return func(*args , **kwargs)
-    return wrapper
 
 
-def login_user(user: User):
-    session.permanent = True
-    session["user_id"] = user._id
-    
-def logout_user():
-    session.clear()
-    session.permanent = False
 
 
 #----------------
@@ -123,6 +139,18 @@ def login():
 
         login_user(user)
         return redirect("/")
+
+
+@app.route("/profile" , methods = ["GET","POST"])
+def edit_profile():
+    if request.method == "GET":
+        return render_template("profile.html")
+
+    elif request.method == "POST":
+        plain_text = request.form.get("plain_text")
+        return redirect("/profile")
+
+
 
 
 @app.route("/logout")
