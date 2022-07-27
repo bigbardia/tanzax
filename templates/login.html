@@ -1,15 +1,3 @@
-<!-- <form method = "post">
-
-    <input type="hidden" name = "csrf_token" value="{{ csrf_token() }}" />
-    <input type="text"   name="username"  value="" required />
-    <input type="password" name="password" value=""  required>
-
-    <button type="submit">
-        SUBMIT
-
-    </button>
-</form> -->
-
 {% extends 'base.html' %}
 
 {% block head %}
@@ -53,7 +41,17 @@
                       </div>
 
                       <div class="text-center text-danger">
-                        <!-- ارور رو اینجا بنویس -->
+
+
+                        {% with messages = get_flashed_messages() %}
+                          {% if messages %}
+                            {% for msg in messages %}
+                              <p>
+                                  {{msg}}
+                              </p>
+                            {% endfor %}
+                            {% endif %}
+                          {% endwith %}
                       </div>
 
                     <div class="text-center my-4">

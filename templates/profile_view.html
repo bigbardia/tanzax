@@ -1,5 +1,5 @@
 {% if html %}
-    {{ bio|safe }}
+    {{ user.bio|safe }}
 {% else %}
 <!DOCTYPE html>
 
@@ -10,14 +10,16 @@
 
 </html>
 
+    <img src="{{ user.image_url }}" />
+    <br>
 
 
-    {{ username }}
+    {{ user.username }}
 
     <br>
 
 
-    {{ timestamp }}
+    {{ user.timestamp }}
     <br>
     <a href="{{ bio_url }}">click ME</a>
 
