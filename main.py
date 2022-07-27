@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import (
     Flask,
     render_template,
@@ -30,6 +31,7 @@ csrf = CSRFProtect(app=app)
 
 #-----
 def login_required(func):
+    @wraps(func)
     def wrapper(*args , **kwargs):
         user_id = session.get("user_id", None)
         if not user_id:
@@ -147,7 +149,8 @@ def edit_profile():
         return render_template("profile.html")
 
     elif request.method == "POST":
-        plain_text = request.form.get("plain_text")
+        plain_text = request.form.get("plain_text" , None)
+
         return redirect("/profile")
 
 
