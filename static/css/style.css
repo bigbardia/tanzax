@@ -1,0 +1,60 @@
+* {
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+body {
+    background-color: #011931;
+        
+}
+
+.dommy {
+    background-color: #011931;
+
+}
+
+.post-col {
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.file-image {
+    margin-top: 10px;
+}
+
+main {
+    margin-top: 4rem;
+}
+
+textarea {
+    height: 10px;
+    max-height: 100px;
+    display: inline;
+}
+
+.send-icon {
+    font-size: 25px;
+    margin-top: 4px;
+}
+
+.post-title {
+    font-size: 1.3vw;
+}
+
+.like-icon {
+    font-size: 20px;
+    margin-top: 9px;
+}
+
+.like-button {
+    text-align: left;
+
+}
+
+.comment-icon {
+    font-size: 20px;
+    margin-top: 9px;
+}
