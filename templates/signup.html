@@ -41,7 +41,16 @@
                       </div>
 
                       <div class="text-center text-danger">
-                        <!-- ارور رو اینجا بنویس -->
+                                                
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for msg in messages %}
+                                {{msg}}
+                                <br>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                        
                       </div>
 
                     <div class="text-center my-4">
@@ -76,12 +85,3 @@
       </section>
 
 {% endblock %}
-
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for msg in messages %}
-            {{msg}}
-            <br>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
