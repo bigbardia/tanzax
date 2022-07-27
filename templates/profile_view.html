@@ -1,0 +1,27 @@
+{% if html %}
+    {{ bio|safe }}
+{% else %}
+<!DOCTYPE html>
+
+
+<html>
+
+
+
+</html>
+
+
+
+    {{ username }}
+
+    <br>
+
+
+    {{ timestamp }}
+    <br>
+    <a href="{{ bio_url }}">click ME</a>
+
+
+</html>
+
+{% endif %}
