@@ -28,6 +28,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
 app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
 app.config["UPLOAD_FOLDER"] = "uploads"
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
+
 db = SQLAlchemy(app = app)
 csrf = CSRFProtect(app=app)
 
@@ -40,13 +41,20 @@ pic_extensions = {"png" , "jpg","gif","jpeg","jfif"}
 def login_required(func):
     @wraps(func)
     def wrapper(*args , **kwargs):
-        user_id = session.get("user_id", None)
-        user = User.query.get(user_id)
-        if not user_id or not user:
+        if not is_authenticated():
             logout_user()
             return redirect("/login")
         return func(*args , **kwargs)
     return wrapper
+
+
+
+def is_authenticated()->bool:
+    user_id = session.get("user_id",None)
+    user =User.query.get(user_id)
+    if not user_id or not user:
+        return False
+    return True
 
 
 def login_user(user):
@@ -74,9 +82,9 @@ def valid_characters(username : str):
             return False
     return True
 
+app.jinja_env.globals.update(is_authenticated = is_authenticated)
 #-----------------------------------------------------------
 #MODELS
-
 
 class User(db.Model):
 
@@ -88,6 +96,7 @@ class User(db.Model):
     timestamp = db.Column(db.Integer, default=int_time , nullable = False)
     bio = db.Column(db.Text , nullable = True)
     image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpeg")
+    last_ping = db.Column(db.Integer , nullable = True , default = int_time)
 
     def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
         self.username = username
@@ -103,7 +112,7 @@ class User(db.Model):
     
     def verify_password(self , password) -> bool:
         return bcrypt.verify(password , self.hashed_password)
-
+    
 
 
 
@@ -177,6 +186,11 @@ def profile_view(_id):
         if request.args.get("html",None):
             context["html"] = True
             return render_template("profile_view.html",**context)
+        
+        context["online"] = False
+        current_time = int_time()
+        if current_time - user.last_ping  <  20:
+            context["online"] = True
 
         context["bio_url"] = url_for("profile_view",_id = _id) +"?html=true"
         return render_template("profile_view.html" , **context)
@@ -185,11 +199,6 @@ def profile_view(_id):
 def logout():
     logout_user()
     return redirect("/login")
-
-@app.route("/test")
-def test():
-    return f"{session.items()}"
-
 
 @app.route("/")
 @login_required
@@ -228,6 +237,18 @@ def edit_profile():
         return redirect("/profile")
 
 
+@app.route("/ping")
+def ping():
+    user = get_current_user()
+    user.last_ping = int_time()
+    db.session.commit()
+    return {"message" : "success"}
+
+
+@app.route("/test")
+def test():    
+    return render_template("test.html")
+
 
 
 @app.route('/media/<name>')
@@ -238,5 +259,3 @@ def view_file(name):
 if __name__ == "__main__":
     db.create_all()
     app.run(debug = True , threaded = True)
-
-
