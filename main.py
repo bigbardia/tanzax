@@ -82,9 +82,9 @@ class User(db.Model):
     hashed_password = db.Column(db.String(50) , nullable = False)
     timestamp = db.Column(db.Integer, default=int_time , nullable = False)
     bio = db.Column(db.Text , nullable = True)
-    image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpg")
+    image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpeg")
 
-    def __init__(self , username , password , bio="" , image_url="/media/default.jpg"):
+    def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
         self.username = username
         self.hashed_password = self.hash_password(password)        
         self.bio = bio
