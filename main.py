@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import (
     Flask,
-    get_flashed_messages,
     render_template,
     request,
     flash,
@@ -129,6 +128,7 @@ class Post(db.Model):
     text = db.Column(db.String(512), nullable = True )
     file_url = db.Column(db.String(512) , nullable = True)
     author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
+    timestamp = db.Column(db.Integer , default = int_time , nullable = False)
 
     def __init__(self , title , text=None , file_url = None):
         self.title = title
