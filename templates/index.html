@@ -55,13 +55,13 @@
                 </div>
 
                 <div class="col-6 text-light" style="direction: ltr;">
-                    <a href="" ><img src="{{post.author.image_url}}" alt="" class="rounded-circle user-image"></a>
+                    <img src="{{post.author.image_url}}" alt="" class="rounded-circle user-image">
                     <span class="post-info"><a href="{{post.author.get_profile_url}}" class="text-light"> {{post.author.username}}</a></span> <span>|</span> <!-- Put author here -->
                     <span class="post-info">{{post.timestamp}}</span> <!-- Put date here -->
                 </div>
             </div>
   
-            <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here -->
+            <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here --> 
 
             <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->
 
