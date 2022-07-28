@@ -23,6 +23,10 @@
     <!-- Main css  -->
     <link rel="stylesheet" href="{{ url_for('static' , filename = 'css/style.css') }}">     
 
+    {% if is_authenticated() %}
+        <script src="/static/js/is_online.js"></script>
+    {% endif %}
+
 
     <title>تنذعکس</title>
 

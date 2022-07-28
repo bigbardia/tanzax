@@ -1,6 +1,17 @@
+
 <!-- {% if html %}
-    {{ user.bio|safe }}
+
+
+
+
+{% if html %}
+
+
+
+
+    <script src="/static/js/is_online.js"></script>
 {% else %}
+
 <!DOCTYPE html>
 
 
@@ -18,11 +29,19 @@
 
     <br>
 
+    <br>
+    is_online : {{online}}
+    <br>
+
 
     {{ user.timestamp }}
     <br>
     <a href="{{ bio_url }}">click ME</a>
 
+
+    <script src="/static/js/is_online.js">
+
+    </script>
 
 </html>
 

@@ -7,7 +7,8 @@ from flask import (
     redirect,
     session,
     url_for,
-    send_from_directory
+    send_from_directory,
+    abort
 )
 from flask_wtf import CSRFProtect
 import uuid
@@ -28,6 +29,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
 app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
 app.config["UPLOAD_FOLDER"] = "uploads"
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
+
 db = SQLAlchemy(app = app)
 csrf = CSRFProtect(app=app)
 
@@ -40,13 +42,20 @@ pic_extensions = {"png" , "jpg","gif","jpeg","jfif"}
 def login_required(func):
     @wraps(func)
     def wrapper(*args , **kwargs):
-        user_id = session.get("user_id", None)
-        user = User.query.get(user_id)
-        if not user_id or not user:
+        if not is_authenticated():
             logout_user()
             return redirect("/login")
         return func(*args , **kwargs)
     return wrapper
+
+
+
+def is_authenticated()->bool:
+    user_id = session.get("user_id",None)
+    user =User.query.get(user_id)
+    if not user_id or not user:
+        return False
+    return True
 
 
 def login_user(user):
@@ -68,10 +77,15 @@ def get_current_user():
 def allowed_pic_extension(filename : str) -> bool:
     return "." in filename and filename.rsplit(".",1)[1].lower() in pic_extensions
 
+def valid_characters(username : str):
+    for i in username:
+        if i not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRTUVWXYZ0123456789":
+            return False
+    return True
 
+app.jinja_env.globals.update(is_authenticated = is_authenticated)
 #-----------------------------------------------------------
 #MODELS
-
 
 class User(db.Model):
 
@@ -82,9 +96,10 @@ class User(db.Model):
     hashed_password = db.Column(db.String(50) , nullable = False)
     timestamp = db.Column(db.Integer, default=int_time , nullable = False)
     bio = db.Column(db.Text , nullable = True)
-    image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpg")
+    image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpeg")
+    last_ping = db.Column(db.Integer , nullable = True , default = int_time)
 
-    def __init__(self , username , password , bio="" , image_url="/media/default.jpg"):
+    def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
         self.username = username
         self.hashed_password = self.hash_password(password)        
         self.bio = bio
@@ -98,7 +113,7 @@ class User(db.Model):
     
     def verify_password(self , password) -> bool:
         return bcrypt.verify(password , self.hashed_password)
-
+    
 
 
 
@@ -118,8 +133,13 @@ def signup():
         if not username:
             errors.append("اقای محرتم!!!!!یوزرنیم لازم میباشد")
         
+        
+        elif not valid_characters(username):
+            errors.append("کاراکتر های غلط")
+        
         elif User.query.filter_by(username = username).first():
             errors.append("یوزرنیم الردی در پایاگاه دیتا وجود دارد")
+        
 
         if not password:
             errors.append("پسسورد الزمامیست۱")
@@ -159,27 +179,29 @@ def login():
         return redirect("/")
 
 
-@app.route("/profile/<_id>")
-def profile_view(_id):
+@app.route("/profile/<username>")
+def profile_view(username):
     if request.method == "GET":
-        user = User.query.get_or_404(_id)
+        user = User.query.filter_by(username = username).first()
+        if not username:
+            abort(404)
         context = {"user" : user}
         if request.args.get("html",None):
             context["html"] = True
             return render_template("profile_view.html",**context)
+        
+        context["online"] = False
+        current_time = int_time()
+        if current_time - user.last_ping  <  20:
+            context["online"] = True
 
-        context["bio_url"] = url_for("profile_view",_id = _id) +"?html=true"
+        context["bio_url"] = url_for("profile_view",username = username) +"?html=true"
         return render_template("profile_view.html" , **context)
 
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect("/login")
-
-@app.route("/test")
-def test():
-    return f"{session.items()}"
-
 
 @app.route("/")
 @login_required
@@ -218,6 +240,18 @@ def edit_profile():
         return redirect("/profile")
 
 
+@app.route("/ping")
+def ping():
+    user = get_current_user()
+    user.last_ping = int_time()
+    db.session.commit()
+    return {"message" : "success"}
+
+
+@app.route("/test")
+def test():    
+    return render_template("test.html")
+
 
 
 @app.route('/media/<name>')
@@ -227,6 +261,5 @@ def view_file(name):
 
 if __name__ == "__main__":
     db.create_all()
+
     app.run(debug = True , threaded = True, host="0.0.0.0")
-
-
