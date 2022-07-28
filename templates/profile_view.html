@@ -43,8 +43,12 @@
 
            <h4 class="mb-0 text-light" style="display: inline;">{{ user.username }}</h4>
            
-           <small style="display: inline;" class="text-muted">آنلاین است.</small>
-           <small style="display: inline;" class="text-muted">آفلاین است.</small>
+           {% if online %}
+                      <small style="display: inline;" class="text-success">آنلاین است.</small>
+           {% else %}
+                      <small style="display: inline;" class="text-danger">آفلاین است.</small>
+           {% endif %}
+           
            <br>
 
            
