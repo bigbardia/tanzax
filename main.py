@@ -98,6 +98,7 @@ class User(db.Model):
     bio = db.Column(db.Text , nullable = True)
     image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpeg")
     last_ping = db.Column(db.Integer , nullable = True , default = int_time)
+    posts = db.relationship("Post",backref = "author")
 
     def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
         self.username = username
@@ -113,9 +114,25 @@ class User(db.Model):
     
     def verify_password(self , password) -> bool:
         return bcrypt.verify(password , self.hashed_password)
-    
 
 
+class Post(db.Model):
+
+    __tablename__ = "posts"
+
+    _id = db.Column(db.Integer, primary_key = True )
+    title = db.Column(db.String(32), nullable = False)
+    text = db.Column(db.String(512), nullable = True )
+    file_url = db.Column(db.String(512) , nullable = True)
+    author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
+
+    def __init__(self , title , text , file_url):
+        self.title = title
+        self.text = text
+        self.file_url = file_url
+
+    def __repr__(self):
+        return f"Post {self.title}"
 
 #----------------
 #ROUTES
@@ -203,12 +220,6 @@ def logout():
     logout_user()
     return redirect("/login")
 
-@app.route("/")
-@login_required
-def index():
-    return render_template("index.html")
-
-
 
 @app.route("/profile" , methods = ["GET","POST"])
 @login_required
@@ -248,18 +259,25 @@ def ping():
     return {"message" : "success"}
 
 
-@app.route("/test")
-def test():    
-    return render_template("test.html")
-
-
-
 @app.route('/media/<name>')
 def view_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 
+
+@app.route("/" , methods = ["GET","POST"])
+@login_required
+def index():
+    if request.method == "GET":
+
+        pass
+
+    elif request.method == "POST":
+        pass
+
+    return render_template("index.html")
+
+
 if __name__ == "__main__":
     db.create_all()
-
     app.run(debug = True , threaded = True, host="0.0.0.0")
