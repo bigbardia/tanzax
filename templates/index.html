@@ -19,38 +19,38 @@
                         <textarea type="text" name="text" id="" class="form-control" placeholder="توضیحات پست"></textarea>
                     </div>
                     <div class="col-1">
-                        <button type="submit">
-                            submit
+                        <button type="submit" title="ارسال پست" class="submit-btn">
+                            <i class="fa fa-paper-plane"></i>
                         </button>
                     </div>
                 </div>
 
                 <div class="row file-image">
                     <div class="col-4">
-                        <input  type="file"  name="file" value="" />
+                        <input class="text-light" type="file"  name="file" value="" />
                     </div>
                 </div>
             </form>
             
 
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <span class="text-danger errors">
+                    {{msg}}
+                    </span>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <h1 style="color: red">
-                {{msg}}
-                </h1>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
 
 
 
-        <div class="col-12 card post-col p-3 bg-dark my-2 post">
+        <div class="col-12 card post-col p-3 bg-dark my-3 post">
             
             <a href=""><p class="text-light post-title">تایتل</p></a>
   
-            <img src="https://imgsv.imaging.nikon.com/lineup/dslr/df/img/sample/img_01_l.jpg" alt="" class="rounded-3">
+            <img src="/media/default.jpeg" alt="" class="rounded-3">
 
             <p class="text-light description my-2">این یک لورم فارسی است و من دارم چرت و پرت مینویسم تا با فونت فارسی و راست چین بودن قشنگ تر بشه و ما بیشتر درکش کنیم.</p>
 
@@ -84,48 +84,10 @@
         </div>
 
 
-        
-        <div class="col-12 card post-col p-3 bg-dark my-2 post">
-            <a href=""><p class="text-light post-title">تایتل</p></a>
-  
-            <img src="https://imgsv.imaging.nikon.com/lineup/dslr/df/img/sample/img_01_l.jpg" alt="" class="rounded-3">
-
-            <p class="text-light description my-2">این یک لورم فارسی است و من دارم چرت و پرت مینویسم تا با فونت فارسی و راست چین بودن قشنگ تر بشه و ما بیشتر درکش کنیم.</p>
-
-            <div class="row">
-                <div class="col-8">
-                    <input type="text" class="form-control post-comment" placeholder="نظر خود را بنویسید.">
-                </div>
-
-                <div class="col-4">
-
-                    <div class="row">
-                        <div class="col-6">
-                            <a class = "text-success" href=""><i class="fa fa-paper-plane comment-icon"></i></a>
-                        </div>
-                        <div class="col-6 like-button">
-                            <a class="text-warning mx-1" href="">
-                                <i class="fa fa-comment comment-icon"></i>
-                            </a>                             
-                            <a class = "text-danger" href="">
-                                <i class="fa fa-heart like-icon"></i>
-                            </a>   
-                        </div>
-                    </div>
-
-                        
-
-                    
-                </div>
-            </div>
-
-        </div>
         
 
 
     </div>
-
-
 
 </div>
 

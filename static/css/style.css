@@ -58,3 +58,20 @@ textarea {
     font-size: 20px;
     margin-top: 9px;
 }
+
+.submit-btn {
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+
+    background-color: transparent;
+    color: white;
+
+    font-size: 25px;
+    margin-top: 50px;
+
+}
+
+.errors {
+    margin-top: 5px;
+}
