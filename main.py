@@ -102,6 +102,7 @@ class User(db.Model):
     image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpeg")
     last_ping = db.Column(db.Integer , nullable = True , default = int_time)
     posts = db.relationship("Post",backref = "author")
+    comments = db.relationship("Comment" , backref = "commenter")
 
     def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
         self.username = username
@@ -129,6 +130,7 @@ class Post(db.Model):
     file_url = db.Column(db.String(512) , nullable = True)
     author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
     timestamp = db.Column(db.Integer , default = int_time , nullable = False)
+    comments = db.relationship("Comment" , backref = "post")
 
     def __init__(self , title , text=None , file_url = None):
         self.title = title
@@ -136,7 +138,23 @@ class Post(db.Model):
         self.file_url = file_url
 
     def __repr__(self):
-        return f"Post {self.title}"
+        return f"<Post {self.title}>"
+
+class Comment(db.Model):
+
+    __tablename__ = "comments"
+
+    _id = db.Column(db.Integer , primary_key = True)
+    text = db.Column(db.String(256) , nullable = False)
+    post_id = db.Column(db.Integer, db.ForeignKey("posts._id") , nullable = False)
+    commenter_id = db.Column(db.Integer , db.ForeignKey("users._id") , nullable = False)
+    timestamp = db.Column(db.Integer , default = int_time , nullable = False)
+
+    def __repr__(self):
+        return f"<Comment {self.commenter , self.post}>"
+
+    def __init__(self , text):
+        self.text =text
 
 #----------------
 #ROUTES
@@ -273,6 +291,9 @@ def view_file(name):
 @login_required
 def index():
     if request.method == "GET":
+        context = {
+            "posts" : Post.query.all()
+        }
         return render_template("index.html")
 
     elif request.method == "POST":
