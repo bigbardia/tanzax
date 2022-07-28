@@ -37,6 +37,8 @@
            <span class="text-muted d-block mb-2">استاتوس</span>
 
            <button class="btn btn-primary btn-sm follow">مرتبط شدن</button>
+           <a href="{{ user.bio_url }}"><button class="btn btn-primary btn-sm follow">درباره {{ user.username }}</button> </a>
+
 
 
            <div class="d-flex justify-content-between align-items-center mt-4 px-4">
@@ -60,6 +62,13 @@
                <span class = "text-light">120</span>
 
              </div>
+
+
+             <div class="stats">
+              <h6 class="mb-0 text-light">اضافه شده در:</h6>
+              <span class = "text-light" style="font-size: 20px;">{{ user.timestamp }}</span>
+
+            </div>
              
            </div>
            
