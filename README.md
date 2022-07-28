@@ -1,6 +1,6 @@
 # tanzax
 
-Persian social media for programmers
+تارنمایی برای برنامه نویسان
 
 ## Contributors
   
