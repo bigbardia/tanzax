@@ -1,4 +1,4 @@
-{% if html %}
+<!-- {% if html %}
     {{ user.bio|safe }}
 {% else %}
 <!DOCTYPE html>
@@ -26,4 +26,84 @@
 
 </html>
 
-{% endif %}
+{% endif %} -->
+
+{% extends 'base.html' %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{{ url_for('static' , filename = 'css/profile_view.css') }}"> 
+
+{% endblock %}
+
+{% block body %}
+
+    {% include 'navbar.html' %}
+
+    <div class="container d-flex justify-content-center align-items-center">
+             
+        <div class="card bg-dark post-col my-3">
+
+         <div class="upper">
+
+           <img src="/media/default.jpeg" class="img-test">
+           
+         </div>
+
+         <div class="user text-center">
+
+           <div class="profile">
+
+             <img src="/media/default.jpeg" class="rounded-circle" width="80">
+             
+           </div>
+
+         </div>
+
+
+         <div class="mt-5 text-center">
+
+           <h4 class="mb-0 text-light">{{ user.username }}</h4>
+           <span class="text-muted d-block mb-2">استاتوس</span>
+
+           <button class="btn btn-primary btn-sm follow">مرتبط شدن</button>
+
+
+           <div class="d-flex justify-content-between align-items-center mt-4 px-4">
+
+             <div class="stats">
+               <h6 class="mb-0 text-light">مرتبط ها</h6>
+               <span class = "text-light">823</span>
+
+             </div>
+
+
+             <div class="stats">
+               <h6 class="mb-0 text-light">پست ها</h6>
+               <span class = "text-light">142</span>
+
+             </div>
+
+
+             <div class="stats">
+               <h6 class="mb-0 text-light">لایک ها</h6>
+               <span class = "text-light">120</span>
+
+             </div>
+             
+           </div>
+           
+         </div>
+          
+        </div>
+
+      </div>
+
+      <br><br><br><br><br>
+      <br><br><br>
+      <br><br>
+
+
+    {% include 'footer.html' %}
+
+{% endblock %}

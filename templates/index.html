@@ -7,11 +7,10 @@
 {% block body %}
 
 {% include 'navbar.html' %}
-<div class="containter">
+<div class="container">
 
-    <div class="row">
-        <div class="col-4 card border-0 dommy"></div>
-        <div class="col-4 card post-col p-3 bg-dark my-2 post">
+    <div class="row" style="" >
+        <div class="col-12 card post-col p-3 bg-dark my-2 post">
             <div class="row">
                 <div class="col-11">
                     <textarea type="text" name="" id="" class="form-control" placeholder="پست جدید"> </textarea>
@@ -34,11 +33,9 @@
             </div>
 
         </div>
-        <div class="col-4 card border-0 dommy"></div>
-        
-        <div class="col-4 card border-0 dommy"></div>
 
-        <div class="col-4 card post-col p-3 bg-dark my-2 post">
+
+        <div class="col-12 card post-col p-3 bg-dark my-2 post">
             
             <a href=""><p class="text-light post-title">تایتل</p></a>
   
@@ -74,11 +71,10 @@
             </div>
 
         </div>
-        <div class="col-4 card border-0 dommy"></div>
-        <div class="col-4 card border-0 dommy"></div>
+
 
         
-        <div class="col-4 card post-col p-3 bg-dark my-2 post">
+        <div class="col-12 card post-col p-3 bg-dark my-2 post">
             <a href=""><p class="text-light post-title">تایتل</p></a>
   
             <img src="https://imgsv.imaging.nikon.com/lineup/dslr/df/img/sample/img_01_l.jpg" alt="" class="rounded-3">
@@ -114,9 +110,6 @@
 
         </div>
         
-        
-
-        
 
 
     </div>
@@ -124,4 +117,6 @@
 
 
 </div>
+
+{% include 'footer.html' %}
 {% endblock %}

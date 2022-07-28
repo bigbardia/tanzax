@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
     <head>
         <title>
@@ -43,4 +43,30 @@
 
         <script src="/static/js/profile.js"></script>
     </body>
-</html>
+</html> -->
+
+{% extends 'base.html' %}
+
+{% block head %}
+
+    <title>تنذعکس - تغییر پروفایل</title>
+
+{% endblock %}
+
+{% block body %}
+
+    {% include 'navbar.html' %}
+
+        <div class="container">
+            
+
+                        <img src="../uploads/default.jpeg" alt="" style="">
+
+
+        </div>
+
+        <script src="/static/js/profile.js"></script>
+
+    {% include 'footer.html' %}
+
+{% endblock %}
