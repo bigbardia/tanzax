@@ -114,6 +114,10 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.username}>"
 
+    @property
+    def get_profile_url(self):
+        return f"/profile/{self.username}"
+
     def hash_password(self,password):
         return bcrypt.hash(password)
     
@@ -308,7 +312,7 @@ def index():
         context = {
             "posts" : Post.query.all()
         }
-        return render_template("index.html")
+        return render_template("index.html" , **context)
 
     elif request.method == "POST":
         
