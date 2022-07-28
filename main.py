@@ -183,7 +183,7 @@ def login():
 def profile_view(username):
     if request.method == "GET":
         user = User.query.filter_by(username = username).first()
-        if not username:
+        if not user:
             abort(404)
         context = {"user" : user}
         if request.args.get("html",None):
