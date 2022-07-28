@@ -60,8 +60,12 @@
                     <span class="post-info">{{post.timestamp}}</span> <!-- Put date here -->
                 </div>
             </div>
-  
+            
+            {% if is_aks(post.file_url) %}
             <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here --> 
+            {% else %}
+                                                            <!--   سلام امیدوارم عصر تابستونیه خوبی داشته باشی اینجا باید لینک فایلو بزاری فرد محرتم   -->
+            {% endif %}
 
             <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->
 

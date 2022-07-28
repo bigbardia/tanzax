@@ -86,6 +86,13 @@ def valid_characters(username : str):
             return False
     return True
 
+def is_aks(file_url : str):
+    extension = file_url.split(".")[1]
+    if extension in pic_extensions:
+        return True
+    return False
+
+app.jinja_env.globals.update(is_aks = is_aks)
 app.jinja_env.globals.update(is_authenticated = is_authenticated)
 #-----------------------------------------------------------
 #MODELS
