@@ -103,6 +103,7 @@ class User(db.Model):
     last_ping = db.Column(db.Integer , nullable = True , default = int_time)
     posts = db.relationship("Post",backref = "author")
     comments = db.relationship("Comment" , backref = "commenter")
+    likes = db.relationship("Like" , backref = "liker")
 
     def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
         self.username = username
@@ -131,6 +132,7 @@ class Post(db.Model):
     author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
     timestamp = db.Column(db.Integer , default = int_time , nullable = False)
     comments = db.relationship("Comment" , backref = "post")
+    likes = db.relationship("Like" , backref = "post")
 
     def __init__(self , title , text=None , file_url = None):
         self.title = title
@@ -155,6 +157,18 @@ class Comment(db.Model):
 
     def __init__(self , text):
         self.text =text
+
+class Like(db.Model):
+    
+    __tablename__ = "likes"
+    _id = db.Column(db.Integer , primary_key = True)
+    timestamp = db.Column(db.Integer , default = int_time , nullable = False)
+    post_id = db.Column(db.Integer , db.ForeignKey("posts._id") , nullable = False)
+    liker_id = db.Column(db.Integer , db.ForeignKey("users._id") , nullable = False)
+    
+    def __repr__(self):
+        return f"<Like {self.liker} , {self.post}>"
+
 
 #----------------
 #ROUTES
