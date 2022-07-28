@@ -153,7 +153,8 @@ class Post(db.Model):
     author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
     timestamp = db.Column(db.Integer , default = int_time , nullable = False)
     comments = db.relationship("Comment" , backref = "post")
-    likes = db.relationship("Like" , backref = "post")
+    likes = db.relationship("Like" , backref = "post" )
+    like_counter = db.Column(db.Integer , default = 0 , nullable = False)
 
     def __init__(self , title , text=None , file_url = None):
         self.title = title
@@ -330,9 +331,16 @@ def view_file(name):
 @login_required
 def index():
     if request.method == "GET":
-        context = {
-            "posts" : Post.query.all()
-        }
+        context = {}
+        sort_by = request.args.get("sort_by",None)
+        if sort_by:
+            if sort_by == "new":
+                context["posts"] = Post.query.order_by(Post.timestamp.desc())
+                return render_template("index.html" , **context)
+            elif sort_by == "like":
+                context["posts"] = Post.query.order_by(Post.like_counter.desc())
+                return render_template("index.html" , **context)
+        context["posts"] = Post.query.order_by(Post.timestamp.desc())
         return render_template("index.html" , **context)
 
     elif request.method == "POST":
@@ -388,15 +396,16 @@ def like_post():
     request_xhr_key = request.headers.get("X-Requested-With" , None)
     if request_xhr_key and request_xhr_key == "XMLHttpRequest":
         user = get_current_user()
-        post_id = request.form.get("post_id")
+        post_id = int(request.form.get("post_id"))
         post = Post.query.get(post_id)
-        like = Like.query.filter_by(post_id = post_id).first()
-        
+        like = Like.query.filter_by(liker_id = user._id , post_id = post_id).first()
         if like:
             post.likes.remove(like)
+            post.like_counter -= 1
             db.session.delete(like)
         else:
             post.likes.append(Like(post , user))
+            post.like_counter += 1
         db.session.commit()
         likes = post.likes.__len__()
         return {"likes" : likes}
