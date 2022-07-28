@@ -4,11 +4,13 @@ let p = document.getElementById("payam");
 let file = document.getElementById("file_selector");
 file.onchange = ()=>{
         
-        if (file.files.length > 0){
+        if (file.files.length > 0) {
             let file_size =    file.files[0].size;
-            if (file_size > 20 * 1000 * 1000){
+            if (file_size > 20 * 1000 * 1000) {
                 p.innerText = "فایل بزرگ است";
-            }else{
+            }
+            
+            else  {
                 p.innerText = "";
             }
     }
@@ -16,16 +18,19 @@ file.onchange = ()=>{
 
 btn.onclick = ()=>{
     
-    if (file.files.length > 0){
+    if (file.files.length > 0) {
         let file_size= file.files[0].size;
 
         if (file_size <= 20 * 1000 * 1000){
             form.submit();
-        }else{
+        }
+        
+        else {
             p.innerText = "فایل بزرگ است"
         }
     }
-    else{
+
+    else {
         form.submit();
     }
 }

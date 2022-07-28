@@ -49,7 +49,9 @@
 
 {% block head %}
 
-    <title>تنذعکس - تغییر پروفایل</title>
+
+    <link rel="stylesheet" href="{{ url_for('static' , filename = 'css/change_profile.css') }}"> 
+
 
 {% endblock %}
 
@@ -57,14 +59,51 @@
 
     {% include 'navbar.html' %}
 
-        <div class="container">
-            
+    <div class="container bg-light mt-5 mb-5" style="border-radius: 15px;">
+        <div class="row">
+            <div class="col-md-3 border-right">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><a href=""><img class="rounded-circle mt-5" width="150px" src="/media/default.jpeg"> </a><span class="font-weight-bold my-3">شایان عزیزی</span></div>
+            </div>
+            <div class="col-md-5 border-right">
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right text-light">تنظیمات پروفایل</h4>
+                    </div>
 
-            
 
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="row mt-3">
+                            
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
 
+                            <textarea name="" id="" placeholder="بایوگرافی" class="form-control my-3" style="direction: ltr;">
+                                {{ user.bio }}
+                            </textarea>
+
+                            <p>
+                                انتخاب تصویر
+                            </p>
+
+                            <input type="file" class="my-3" name = "pic"  id="file_selector" />
+
+                            <button type="button" class="btn btn-primary ">
+                                ثبت تغییرات
+                            </button>
+
+                        </div>
+                    </form>
+
+                <br>
+
+                    <p class = "text-danger" id="payam">
+                    </p>
+        
+                <br>
         </div>
-
+    </div>
+    </div>
+    </div>
+        
         <script src="/static/js/profile.js"></script>
 
     {% include 'footer.html' %}
