@@ -7,7 +7,8 @@ from flask import (
     redirect,
     session,
     url_for,
-    send_from_directory
+    send_from_directory,
+    abort
 )
 from flask_wtf import CSRFProtect
 import uuid
@@ -178,10 +179,12 @@ def login():
         return redirect("/")
 
 
-@app.route("/profile/<_id>")
-def profile_view(_id):
+@app.route("/profile/<username>")
+def profile_view(username):
     if request.method == "GET":
-        user = User.query.get_or_404(_id)
+        user = User.query.filter_by(username = username).first()
+        if not username:
+            abort(404)
         context = {"user" : user}
         if request.args.get("html",None):
             context["html"] = True
@@ -192,7 +195,7 @@ def profile_view(_id):
         if current_time - user.last_ping  <  20:
             context["online"] = True
 
-        context["bio_url"] = url_for("profile_view",_id = _id) +"?html=true"
+        context["bio_url"] = url_for("profile_view",username = username) +"?html=true"
         return render_template("profile_view.html" , **context)
 
 @app.route("/logout")
