@@ -1,3 +1,11 @@
+{% if html %}
+
+  {{user.bio|safe}}
+  <script src="/static/js/is_online.js"></script>
+{% else %}
+
+
+
 {% extends 'base.html' %}
 
 {% block head %}
@@ -16,7 +24,7 @@
 
          <div class="upper">
 
-           <img src="/media/default.jpeg" class="img-test">
+           <img src="{{ user.image_url }}" class="img-test">
            
          </div>
 
@@ -24,7 +32,7 @@
 
            <div class="profile">
 
-             <img src="/media/default.jpeg" class="rounded-circle" width="80">
+             <img src="{{ user.image_url }}" class="rounded-circle" width="80">
              
            </div>
 
@@ -34,10 +42,10 @@
          <div class="mt-5 text-center">
 
            <h4 class="mb-0 text-light">{{ user.username }}</h4>
-           <span class="text-muted d-block mb-2">استاتوس</span>
+           
 
            <button class="btn btn-primary btn-sm follow">مرتبط شدن</button>
-           <a href="{{ user.bio_url }}"><button class="btn btn-primary btn-sm follow">درباره {{ user.username }}</button> </a>
+           <a href="{{ bio_url }}"><button class="btn btn-primary btn-sm follow">درباره {{ user.username }}</button> </a>
 
 
 
@@ -86,3 +94,5 @@
     {% include 'footer.html' %}
 
 {% endblock %}
+
+{% endif %}
