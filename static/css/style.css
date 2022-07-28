@@ -79,3 +79,11 @@ textarea {
 .post-image {
     max-height: 500px;
 }
+
+.user-image {
+
+    width: 20px;
+    height: 20px;
+    display: inline;
+}
+
