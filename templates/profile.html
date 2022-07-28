@@ -1,50 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-    <head>
-        <title>
-            Your Profile
-        </title>
-    </head>
-
-    <body>
-        
-        <img src="{{ user.image_url }}" />
-
-        <form method="post" enctype="multipart/form-data"> 
-            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
-            <input type="file"  name = "pic"  id="file_selector" />
-            <textarea name="plain_text"  >
-                {{user.bio}}
-            </textarea>
-            
-
-            <button type="button">
-                click me
-            </button>
-
-        </form>
-        <br>
-
-            <p id="payam">
-            </p>
-
-        <br>
-
-
-    {% with messages=get_flashed_messages() %}
-    {% if messages %}
-        {% for msg in messages %}
-            {{msg}}
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
-
-
-
-        <script src="/static/js/profile.js"></script>
-    </body>
-</html> -->
-
 {% extends 'base.html' %}
 
 {% block head %}
@@ -62,7 +15,7 @@
     <div class="container bg-light mt-5 mb-5" style="border-radius: 15px;">
         <div class="row">
             <div class="col-md-3 border-right">
-                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><a href=""><img class="rounded-circle mt-5" width="150px" src="/media/default.jpeg"> </a><span class="font-weight-bold my-3">شایان عزیزی</span></div>
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><a href=""><img class="rounded-circle mt-5" width="150px" src="{{ user.image_url }}"> </a><span class="font-weight-bold my-3">{{ user.username }}</span></div>
             </div>
             <div class="col-md-5 border-right">
                 <div class="p-3 py-5">
@@ -76,7 +29,7 @@
                             
                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
 
-                            <textarea name="" id="" placeholder="بایوگرافی" class="form-control my-3" style="direction: ltr;">
+                            <textarea name="plain_text" id="" placeholder="بایوگرافی" class="form-control my-3" style="direction: ltr;">
                                 {{ user.bio }}
                             </textarea>
 
@@ -86,9 +39,22 @@
 
                             <input type="file" class="my-3" name = "pic"  id="file_selector" />
 
-                            <button type="button" class="btn btn-primary ">
+                            <button type="button" class="btn btn-primary " id="button">
                                 ثبت تغییرات
                             </button>
+                            
+
+                            {% with messages=get_flashed_messages() %}
+                            {% if messages %}
+                                {% for msg in messages %}
+                                    <p class="text-danger">
+                                    {{msg}}
+                                    </p>
+                                {% endfor %}
+                            {% endif %}
+                            {% endwith %}
+
+
 
                         </div>
                     </form>
