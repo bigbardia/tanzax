@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import (
     Flask,
+    get_flashed_messages,
     render_template,
     request,
     flash,
@@ -77,6 +78,9 @@ def get_current_user():
 def allowed_pic_extension(filename : str) -> bool:
     return "." in filename and filename.rsplit(".",1)[1].lower() in pic_extensions
 
+def allowed_file_extension(filename : str) -> bool:
+    return "." in filename and filename.rsplit(".",1)[1].lower() in file_extensions
+
 def valid_characters(username : str):
     for i in username:
         if i not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRTUVWXYZ0123456789":
@@ -126,7 +130,7 @@ class Post(db.Model):
     file_url = db.Column(db.String(512) , nullable = True)
     author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
 
-    def __init__(self , title , text , file_url):
+    def __init__(self , title , text=None , file_url = None):
         self.title = title
         self.text = text
         self.file_url = file_url
@@ -269,13 +273,54 @@ def view_file(name):
 @login_required
 def index():
     if request.method == "GET":
-
-        pass
+        return render_template("index.html")
 
     elif request.method == "POST":
-        pass
+        
+        user = get_current_user()
+        title = request.form.get("title" , None)
+        text = request.form.get("text" , None)
+        file = request.files.get("file",None)
 
-    return render_template("index.html")
+        error_msgs = []
+
+        if not title:
+            error_msgs.append("تایتل الزامیست")
+        elif len(title) > 32:
+            error_msgs.append("تایتل گندس")
+        elif title.count(" ") == len(title):
+            error_msgs.append("تایتل رو خالی نده")
+
+        if not file and not text:
+            error_msgs.append("فایل یا متن الزامیست")
+
+        if text:
+            if len(text) > 512:
+                error_msgs.append("گندس")
+            elif text.count(" ") == len(text):
+                error_msgs.append('متن رو خالی نده')
+
+
+        file_url = None
+        
+        if file:
+            if not allowed_file_extension(file.filename):
+                error_msgs.append("فایل درست نیست")
+            if len(error_msgs) == 0:
+                file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
+                file.save(os.path.join(app.config["UPLOAD_FOLDER"] , file.filename))
+                file_url = f"/media/{file.filename}"
+
+        if len(error_msgs) > 0:
+            for error in error_msgs:
+                flash(error)    
+            return redirect("/")
+            
+        post = Post(title , text , file_url)
+        post.author = user
+        db.session.add(post)
+        db.session.commit()
+        return redirect("/")
 
 
 if __name__ == "__main__":

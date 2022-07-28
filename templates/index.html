@@ -11,25 +11,39 @@
 
     <div class="row"  >
         <div class="col-12 card post-col p-3 bg-dark my-2 post">
-            <form method="post" > <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+            <form method="post" enctype="multipart/form-data" > <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
                 <div class="row">
                     <div class="col-11">
                         <div style="text-align: center;">
                         <input type="text" name="title" value="" class="form-control my-3" placeholder="تیتر پست" style="width: 25%;" /></div>
-                        <textarea type="text" name="" id="" class="form-control" placeholder="توضیحات پست"> </textarea>
+                        <textarea type="text" name="text" id="" class="form-control" placeholder="توضیحات پست"></textarea>
                     </div>
                     <div class="col-1">
-                        <a type="submit" title="ارسال پست" class=""><i class="fa fa-paper-plane send-icon" ></i></a>
+                        <button type="submit">
+                            submit
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row file-image">
+                    <div class="col-4">
+                        <input  type="file"  name="file" value="" />
                     </div>
                 </div>
             </form>
-            <div class="row file-image">
-                <div class="col-4">
-                    <button class="btn btn-outline-warning">فایل</button>
-                </div>
-            </div>
+            
 
         </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <h1 style="color: red">
+                {{msg}}
+                </h1>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
 
 
         <div class="col-12 card post-col p-3 bg-dark my-2 post">
