@@ -63,10 +63,10 @@
             
             {% if is_aks(post.file_url) %}
             <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here --> 
+            
             {% else %}
-                                                            <!--   سلام امیدوارم عصر تابستونیه خوبی داشته باشی اینجا باید لینک فایلو بزاری فرد محرتم   -->
+                <a href="{{ post.file_url }}" class="my-2"> {{ post.file_url }}</a>                                            
             {% endif %}
-
             <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->
 
             <div class="row">
