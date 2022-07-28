@@ -378,6 +378,16 @@ def index():
         return redirect("/")
 
 
+
+@app.route("/posts/<_id>") #TODO : fix this
+def view_post(_id):
+    context = {
+        "post" : Post.query.get_or_404(_id)
+    }
+    return render_template("post.html" , **context)
+
+
+
 if __name__ == "__main__":
     db.create_all()
     app.run(debug = True , threaded = True, host="0.0.0.0")
