@@ -60,12 +60,12 @@
                     <span class="post-info">{{post.timestamp}}</span> <!-- Put date here -->
                 </div>
             </div>
-            
-            {% if is_aks(post.file_url) %}
+            {% if post.file_url %}
+                {% if is_aks(post.file_url) %}
             <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here --> 
-            
-            {% else %}
+                {% else %}
                 <a href="{{ post.file_url }}" class="my-2"> {{ post.file_url }}</a>                                            
+                {% endif %}
             {% endif %}
             <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->
 
