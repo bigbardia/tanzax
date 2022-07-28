@@ -14,8 +14,9 @@
             <form method="post" > <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
                 <div class="row">
                     <div class="col-11">
-                        <input type="text" name="title" value="" class="form-control my-3"  />
-                        <textarea type="text" name="" id="" class="form-control" placeholder="پست جدید"> </textarea>
+                        <div style="text-align: center;">
+                        <input type="text" name="title" value="" class="form-control my-3" placeholder="تیتر پست" style="width: 25%;" /></div>
+                        <textarea type="text" name="" id="" class="form-control" placeholder="توضیحات پست"> </textarea>
                     </div>
                     <div class="col-1">
                         <a type="submit" class=""><i class="fa fa-paper-plane send-icon" ></i></a>
