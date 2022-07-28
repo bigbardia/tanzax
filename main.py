@@ -28,6 +28,7 @@ app.secret_key = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
 app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
+app.config["SESSION_COOKIE_HTTPONLY"] = False
 app.config["UPLOAD_FOLDER"] = "uploads"
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
 
@@ -186,6 +187,10 @@ class Like(db.Model):
     post_id = db.Column(db.Integer , db.ForeignKey("posts._id") , nullable = False)
     liker_id = db.Column(db.Integer , db.ForeignKey("users._id") , nullable = False)
     
+    def __init__(self, post , liker):
+        self.post = post
+        self.liker = liker
+
     def __repr__(self):
         return f"<Like {self.liker} , {self.post}>"
 
@@ -377,6 +382,25 @@ def index():
         db.session.commit()
         return redirect("/")
 
+@app.route("/like_posts" , methods = ["POST"])
+@login_required
+def like_post():
+    request_xhr_key = request.headers.get("X-Requested-With" , None)
+    if request_xhr_key and request_xhr_key == "XMLHttpRequest":
+        user = get_current_user()
+        post_id = request.form.get("post_id")
+        post = Post.query.get(post_id)
+        like = Like.query.filter_by(post_id = post_id).first()
+        
+        if like:
+            post.likes.remove(like)
+            db.session.delete(like)
+        else:
+            post.likes.append(Like(post , user))
+        db.session.commit()
+        likes = post.likes.__len__()
+        return {"likes" : likes}
+    abort(404)
 
 
 @app.route("/posts/<_id>") #TODO : fix this
