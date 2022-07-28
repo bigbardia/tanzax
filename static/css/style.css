@@ -75,3 +75,7 @@ textarea {
 .errors {
     margin-top: 5px;
 }
+
+.post-image {
+    max-height: 500px;
+}
