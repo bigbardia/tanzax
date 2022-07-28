@@ -96,6 +96,10 @@ def is_aks(file_url : str):
 def to_datetime(timestamp : int):
     return strftime("%A, %Y-%m-%d %H:%M:%S" ,localtime(timestamp))
 
+
+
+
+app.jinja_env.globals.update(current_user = get_current_user)
 app.jinja_env.globals.update(to_datetime = to_datetime)
 app.jinja_env.globals.update(is_aks = is_aks)
 app.jinja_env.globals.update(is_authenticated = is_authenticated)
