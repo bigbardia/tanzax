@@ -17,6 +17,7 @@ from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import bcrypt
 from dotenv import load_dotenv
 from time import time
+from time import strftime , localtime
 from xss import escape_javascript
 
 
@@ -92,6 +93,10 @@ def is_aks(file_url : str):
         return True
     return False
 
+def to_datetime(timestamp : int):
+    return strftime("%A, %Y-%m-%d %H:%M:%S" ,localtime(timestamp))
+
+app.jinja_env.globals.update(to_datetime = to_datetime)
 app.jinja_env.globals.update(is_aks = is_aks)
 app.jinja_env.globals.update(is_authenticated = is_authenticated)
 #-----------------------------------------------------------
