@@ -61,7 +61,7 @@
             <div class="row">
 
                 <div class="col-6">
-                    <a href=""><p class="text-light post-title">{{post.title}}</p></a> <!-- Put title here -->
+                    <a href="{{post.get_post_url}}"><p class="text-light post-title">{{post.title}}</p></a> <!-- Put title here -->
                 </div>
 
                 <div class="col-6 text-light" style="direction: ltr;">
@@ -74,7 +74,6 @@
                 {% if is_aks(post.file_url) %}
             <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here --> 
                 {% else %}
-
                 <a href="{{ post.file_url }}" class="my-2"> {{ post.file_url }}</a>                                            
 
                 {% endif %}
@@ -85,20 +84,20 @@
             <div class="row">
                 <div class="col-8">
                     <form method="post" >
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_token" />
-                    <input type="text" class="form-control post-comment" placeholder="نظر خود را بنویسید.">
-                    <input type="hidden" name="post_id" value="{{ post._id }}"  id="post_id" />
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_token" />
+                        <input type="text" name="comment_text" class="form-control post-comment" placeholder="نظر خود را بنویسید.">
+                        <input type="hidden" name="post_id" value="{{ post._id }}"  id="post_id" />
                 </div>
-                
                 <div class="col-4">
-                
                     <div class="row">
                         <div class="col-6">
-                            <button class = "submit-btn text-success"  type = "submit" style="margin-top: -10px; font-size: 17px;" href="">ارسال کامنت</button>
+
+                            <button  name="submit_comment" value="salam"  class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" >ارسال کامنت</button>
+
                         </form>
                         </div>
                         <div class="col-6 like-button">
-                            <a class="text-warning mx-1" href="">
+                            <a class="text-warning mx-1" href="{{post.get_post_url}}">
                                 کامنت ها
                             </a>                             
                             <a class = "text-danger" style="cursor: pointer;" onclick="Like(' {{post._id}} ')">
