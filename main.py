@@ -445,7 +445,8 @@ def like_post():
 def view_post(_id):
     if request.method == "GET":
         context = {
-        "post" : Post.query.get_or_404(_id)
+        "post" : Post.query.get_or_404(_id),
+        "comments" : Comment.query.filter_by(post_id = _id).order_by(Comment.timestamp.desc())
         }
         return render_template("post.html" , **context)
     elif request.method == "POST":
