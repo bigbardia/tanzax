@@ -44,6 +44,13 @@
             {% endwith %}
         </div>
 
+        <a href="/?sort_by=like">
+            مرتبط سازی براساس لایک ها
+        </a>
+        <a href="/?sort_by=new">
+            مرتبط سازی براساس جدیدترین ها
+        </a>
+
 
         {% for post in posts %}
         <div class="col-12 card post-col p-3 bg-dark my-3 post"> <!-- post div starts here -->
@@ -68,6 +75,7 @@
                 {% endif %}
             {% endif %}
             <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->
+
 
             <div class="row">
                 <div class="col-8">

@@ -2,6 +2,8 @@
 
 {% block head %}
 
+    <link rel="stylesheet" href="{{ url_for('static' , filename = 'css/post.css') }}"> 
+
 {% endblock %}
 
 
@@ -11,8 +13,29 @@
 
         <div class="container">
 
-            <div class="card bg-dark post-col">
-                سلام
+            <div class="card my-4 bg-dark post-col p-2">
+                
+                <p class="text-light my-2 text-center post-view-title">
+                    تایتل
+                </p>
+
+                {% if post.file_url %}
+                    {% if is_aks(post.file_url) %}
+                        <img src="{{post.file_url}}" alt="" class="rounded-3 m-2">
+                    {% else %}
+                        <a href="{{ post.file_url }}" class="my-2"> {{ post.file_url }}</a>                                            
+                    {% endif %}
+                {% endif %}
+                
+                <p class="text-light description my-2">{{post.text}}</p> 
+
+                <hr class="text-light mx-5">
+
+                <p class="text-light">
+                    نظرات ها
+                </p>
+
+
             </div>
 
         </div>
