@@ -156,6 +156,11 @@ class Post(db.Model):
     likes = db.relationship("Like" , backref = "post" )
     like_counter = db.Column(db.Integer , default = 0 , nullable = False)
 
+    @property
+    def get_post_url(self):
+        return f"/posts/{self._id}"
+
+
     def __init__(self , title , text=None , file_url = None):
         self.title = title
         self.text = text
