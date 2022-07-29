@@ -99,7 +99,7 @@
                             <a class="text-warning mx-1" href="">
                                 کامنت ها
                             </a>                             
-                            <a class = "text-danger" onclick="Like(' {{post._id}} ')">
+                            <a class = "text-danger" style="cursor: pointer;" onclick="Like(' {{post._id}} ')">
                                 لایک
                             </a>> 
                             <p  style = "color: red;" id="{{post._id}}">{{ post.likes.__len__() }}</p>
