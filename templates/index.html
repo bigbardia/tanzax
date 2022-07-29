@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-11">
                         <div style="text-align: center;">
-                        <input type="text" name="title" value="" class="form-control my-3" placeholder="تیتر پست" style="width: 25%;" /></div>
+                        <input type="text" name="title" value="" class="form-control my-3" placeholder="تیتر پست" style="width: 25%; white-space: pre-line;" /></div>
                         <textarea type="text" name="text" id="" class="form-control" placeholder="توضیحات پست"></textarea>
                     </div>
                     <div class="col-1">
@@ -78,7 +78,7 @@
 
                 {% endif %}
             {% endif %}
-            <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->
+            <p class="text-light description my-2" style="white-space: pre-line;">{{post.text}}</p> <!-- Put description here -->
 
 
             <div class="row">
