@@ -54,6 +54,24 @@
                 {% endfor %}
                 
 
+                <div class="row">
+
+                    <div class="col-8">
+                        <form method="post">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_token" />
+                            <input type="text" name="comment_text" class="form-control post-comment" placeholder="نظر خود را بنویسید.">
+                            <input type="hidden" name="post_id" value="{{ post._id }}"  id="post_id" />
+                    </div>
+
+                    <div class="col-4">
+
+                            <button  name="submit_comment" value="salam"  class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" >ارسال کامنت</button>
+                        
+                        </form>
+                    </div>
+
+                </div>
             </div>
 
         </div>

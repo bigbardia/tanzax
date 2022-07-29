@@ -449,8 +449,32 @@ def view_post(_id):
         "comments" : Comment.query.filter_by(post_id = _id).order_by(Comment.timestamp.desc())
         }
         return render_template("post.html" , **context)
+
     elif request.method == "POST":
-        pass
+
+        
+        comment_text = request.form.get("comment_text")
+        errors_msgs = []
+        post_id = request.form.get("post_id",None)
+        post = Post.query.get(post_id)
+        if not comment_text:
+            errors_msgs.append("کامنت خالی قبول نیست")
+        elif comment_text.count(" ") == len(comment_text):
+            errors_msgs.append("خالی قبول نیست")
+        elif len(comment_text) > 256:
+            errors_msgs.append("گندس")
+
+        if len(errors_msgs) > 0:
+            for error in errors_msgs:
+                flash(error)
+            return redirect(post.get_post_url)
+
+        
+        comment = Comment(comment_text , post , get_current_user())
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(post.get_post_url)
+
 
 
 if __name__ == "__main__":
