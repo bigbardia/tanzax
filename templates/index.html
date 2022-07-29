@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-1">
                         <button type="submit" title="ارسال پست" class="submit-btn">
-                            <i class="fa fa-paper-plane"></i>
+                            ارسال پست
                         </button>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                     <a href=""><p class="text-light post-title">{{post.title}}</p></a> <!-- Put title here -->
                 </div>
 
-                <div class="col-6 text-light" style="direction: ltr;">
+                <div class="col-6 text-light" style="direction: ltre;">
                     <img src="{{post.author.image_url}}" alt="" class="rounded-circle user-image">
                     <span class="post-info"><a href="{{post.author.get_profile_url}}" class="text-light"> {{post.author.username}}</a></span> <span>|</span> <!-- Put author here -->
                     <span class="post-info">{{ to_datetime(post.timestamp) }}</span> <!-- Put date here -->
@@ -86,18 +86,18 @@
                 </div>
                 
                 <div class="col-4">
-                    
+                
                     <div class="row">
                         <div class="col-6">
-                            <button class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" href=""><i class="fa fa-paper-plane comment-icon"></i></button>
+                            <button class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" href="">ارسال کامنت</button>
                         </form>
                         </div>
                         <div class="col-6 like-button">
                             <a class="text-warning mx-1" href="">
-                                <i class="fa fa-comment comment-icon"></i>
+                                کامنت ها
                             </a>                             
                             <a class = "text-danger" onclick="Like(' {{post._id}} ')">
-                                <i class="fa fa-heart like-icon"></i>
+                                لایک
                             </a> 
                             <p  style = "color: red;" id="{{post._id}}">{{ post.likes.__len__() }}</p>
                         </div>
@@ -111,9 +111,6 @@
 
         </div>
         {% endfor %}
-
-
-        
 
 
     </div>

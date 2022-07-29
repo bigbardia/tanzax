@@ -420,7 +420,11 @@ def view_post(_id):
     return render_template("post.html" , **context)
 
 
+@app.route("/test")
+def test ():
+    return render_template("test.html")
+
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug = True , threaded = True)
+    app.run(debug = True , threaded = True, host="0.0.0.0")
