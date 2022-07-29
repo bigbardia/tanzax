@@ -74,7 +74,9 @@
                 {% if is_aks(post.file_url) %}
             <img src="{{post.file_url}}" alt="" class="rounded-3"> <!-- Put image or file url here --> 
                 {% else %}
+
                 <a href="{{ post.file_url }}" class="my-2"> {{ post.file_url }}</a>                                            
+
                 {% endif %}
             {% endif %}
             <p class="text-light description my-2">{{post.text}}</p> <!-- Put description here -->

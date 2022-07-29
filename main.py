@@ -349,7 +349,6 @@ def index():
         return render_template("index.html" , **context)
 
     elif request.method == "POST":
-        
         user = get_current_user()
         title = request.form.get("title" , None)
         text = request.form.get("text" , None)
@@ -417,17 +416,15 @@ def like_post():
     abort(404)
 
 
-@app.route("/posts/<_id>") #TODO : fix this
+@app.route("/posts/<_id>" , methods = ["GET","POST"]) 
 def view_post(_id):
-    context = {
+    if request.method == "GET":
+        context = {
         "post" : Post.query.get_or_404(_id)
-    }
-    return render_template("post.html" , **context)
-
-
-@app.route("/test")
-def test ():
-    return render_template("test.html")
+        }
+        return render_template("post.html" , **context)
+    elif request.method == "POST":
+        pass
 
 
 if __name__ == "__main__":
