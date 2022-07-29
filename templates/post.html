@@ -51,6 +51,7 @@
 
                     </div>
                 </div>
+
                 {% endfor %}
                 
 
@@ -72,9 +73,24 @@
                     </div>
 
                 </div>
+                
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for msg in messages %}
+                
+                    <p class="text-danger" style="margin-bottom: 0; margin-top: 10px;">
+                        {{msg}}
+                    </p>
+
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+                
             </div>
 
         </div>
+
+
 
         <br><br><br><br><br><br><br><br>
         <br><br><br><br><br><br><br><br><br><br>
