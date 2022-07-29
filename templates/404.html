@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{{ url_for('static' , filename = 'css/404.css') }}"> 
+{% endblock %}
+
+
+{% block body %}
+
+    {% include 'navbar.html' %}
+
+        <div class="text-center">
+            <h1 class="text-light">
+                سلام! ببخشید ولی مثل اینکه چیزی که میخواین رو ما نتونستیم پیدا کنیم!
+            </h1>
+
+            <a href="/" class="text-danger">
+                بازگشت به صفحه اول
+            </a>
+        </div>
+
+        <br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br>
+
+
+    {% include 'footer.html' %}
+
+{% endblock %}
