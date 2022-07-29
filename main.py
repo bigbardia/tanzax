@@ -28,6 +28,7 @@ app.secret_key = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
 app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
+app.config["SESSION_COOKIE_HTTPONLY"] = False
 app.config["UPLOAD_FOLDER"] = "uploads"
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
 
@@ -152,7 +153,8 @@ class Post(db.Model):
     author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
     timestamp = db.Column(db.Integer , default = int_time , nullable = False)
     comments = db.relationship("Comment" , backref = "post")
-    likes = db.relationship("Like" , backref = "post")
+    likes = db.relationship("Like" , backref = "post" )
+    like_counter = db.Column(db.Integer , default = 0 , nullable = False)
 
     def __init__(self , title , text=None , file_url = None):
         self.title = title
@@ -186,6 +188,10 @@ class Like(db.Model):
     post_id = db.Column(db.Integer , db.ForeignKey("posts._id") , nullable = False)
     liker_id = db.Column(db.Integer , db.ForeignKey("users._id") , nullable = False)
     
+    def __init__(self, post , liker):
+        self.post = post
+        self.liker = liker
+
     def __repr__(self):
         return f"<Like {self.liker} , {self.post}>"
 
@@ -325,9 +331,16 @@ def view_file(name):
 @login_required
 def index():
     if request.method == "GET":
-        context = {
-            "posts" : Post.query.all()
-        }
+        context = {}
+        sort_by = request.args.get("sort_by",None)
+        if sort_by:
+            if sort_by == "new":
+                context["posts"] = Post.query.order_by(Post.timestamp.desc())
+                return render_template("index.html" , **context)
+            elif sort_by == "like":
+                context["posts"] = Post.query.order_by(Post.like_counter.desc())
+                return render_template("index.html" , **context)
+        context["posts"] = Post.query.order_by(Post.timestamp.desc())
         return render_template("index.html" , **context)
 
     elif request.method == "POST":
@@ -377,6 +390,26 @@ def index():
         db.session.commit()
         return redirect("/")
 
+@app.route("/like_posts" , methods = ["POST"])
+@login_required
+def like_post():
+    request_xhr_key = request.headers.get("X-Requested-With" , None)
+    if request_xhr_key and request_xhr_key == "XMLHttpRequest":
+        user = get_current_user()
+        post_id = int(request.form.get("post_id"))
+        post = Post.query.get(post_id)
+        like = Like.query.filter_by(liker_id = user._id , post_id = post_id).first()
+        if like:
+            post.likes.remove(like)
+            post.like_counter -= 1
+            db.session.delete(like)
+        else:
+            post.likes.append(Like(post , user))
+            post.like_counter += 1
+        db.session.commit()
+        likes = post.likes.__len__()
+        return {"likes" : likes}
+    abort(404)
 
 
 @app.route("/posts/<_id>") #TODO : fix this
