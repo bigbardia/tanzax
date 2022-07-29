@@ -221,10 +221,10 @@ def signup():
         
         
         elif not valid_characters(username):
-            errors.append("کاراکتر های غلط")
+            errors.append("از کاراکتر های اشتباه استفاده کردید")
         
         elif User.query.filter_by(username = username).first():
-            errors.append("یوزرنیم الردی در پایاگاه دیتا وجود دارد")
+            errors.append("یوزرنیم وجود دارد")
         
 
         if not password:
