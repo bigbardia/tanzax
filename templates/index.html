@@ -79,16 +79,18 @@
 
             <div class="row">
                 <div class="col-8">
+                    <form method="post" >
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_token" />
                     <input type="text" class="form-control post-comment" placeholder="نظر خود را بنویسید.">
                     <input type="hidden" name="post_id" value="{{ post._id }}"  id="post_id" />
                 </div>
-
+                
                 <div class="col-4">
-
+                    
                     <div class="row">
                         <div class="col-6">
-                            <a class = "text-success" href=""><i class="fa fa-paper-plane comment-icon"></i></a>
+                            <button class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" href=""><i class="fa fa-paper-plane comment-icon"></i></button>
+                        </form>
                         </div>
                         <div class="col-6 like-button">
                             <a class="text-warning mx-1" href="">
