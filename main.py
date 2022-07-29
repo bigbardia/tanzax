@@ -182,8 +182,10 @@ class Comment(db.Model):
     def __repr__(self):
         return f"<Comment {self.commenter , self.post}>"
 
-    def __init__(self , text):
+    def __init__(self , text , post , commenter):
         self.text =text
+        self.post = post
+        self.commenter = commenter
 
 class Like(db.Model):
     
@@ -349,50 +351,73 @@ def index():
         return render_template("index.html" , **context)
 
     elif request.method == "POST":
-        user = get_current_user()
-        title = request.form.get("title" , None)
-        text = request.form.get("text" , None)
-        file = request.files.get("file",None)
+        if request.form.get("submit_comment" , None):
+            comment_text = request.form.get("comment_text")
+            errors_msgs = []
+            if not comment_text:
+                errors_msgs.append("کامنت خالی قبول نیست")
+            elif comment_text.count(" ") == len(comment_text):
+                errors_msgs.append("خالی قبول نیست")
+            elif len(comment_text) > 256:
+                errors_msgs.append("گندس")
 
-        error_msgs = []
+            if len(errors_msgs) > 0:
+                for error in errors_msgs:
+                    flash(error)
+                return redirect("/")
 
-        if not title:
-            error_msgs.append("تایتل الزامیست")
-        elif len(title) > 32:
-            error_msgs.append("تایتل گندس")
-        elif title.count(" ") == len(title):
-            error_msgs.append("تایتل رو خالی نده")
+            post_id = request.form.get("post_id",None)
+            post = Post.query.get(post_id)
+            comment = Comment(comment_text , post , get_current_user())
+            db.session.add(comment)
+            db.session.commit()
+            return redirect(post.get_post_url)
 
-        if not file and not text:
-            error_msgs.append("فایل یا متن الزامیست")
+        else:
+            user = get_current_user()
+            title = request.form.get("title" , None)
+            text = request.form.get("text" , None)
+            file = request.files.get("file",None)
 
-        if text:
-            if len(text) > 512:
-                error_msgs.append("گندس")
-            elif text.count(" ") == len(text):
-                error_msgs.append('متن رو خالی نده')
+            error_msgs = []
+
+            if not title:
+                error_msgs.append("تایتل الزامیست")
+            elif len(title) > 32:
+                error_msgs.append("تایتل گندس")
+            elif title.count(" ") == len(title):
+                error_msgs.append("تایتل رو خالی نده")
+
+            if not file and not text:
+                error_msgs.append("فایل یا متن الزامیست")
+
+            if text:
+                if len(text) > 512:
+                    error_msgs.append("گندس")
+                elif text.count(" ") == len(text):
+                    error_msgs.append('متن رو خالی نده')
 
 
-        file_url = None
-        
-        if file:
-            if not allowed_file_extension(file.filename):
-                error_msgs.append("فایل درست نیست")
-            if len(error_msgs) == 0:
-                file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
-                file.save(os.path.join(app.config["UPLOAD_FOLDER"] , file.filename))
-                file_url = f"/media/{file.filename}"
-
-        if len(error_msgs) > 0:
-            for error in error_msgs:
-                flash(error)    
-            return redirect("/")
+            file_url = None
             
-        post = Post(title , text , file_url)
-        post.author = user
-        db.session.add(post)
-        db.session.commit()
-        return redirect("/")
+            if file:
+                if not allowed_file_extension(file.filename):
+                    error_msgs.append("فایل درست نیست")
+                if len(error_msgs) == 0:
+                    file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
+                    file.save(os.path.join(app.config["UPLOAD_FOLDER"] , file.filename))
+                    file_url = f"/media/{file.filename}"
+
+            if len(error_msgs) > 0:
+                for error in error_msgs:
+                    flash(error)    
+                return redirect("/")
+                
+            post = Post(title , text , file_url)
+            post.author = user
+            db.session.add(post)
+            db.session.commit()
+            return redirect("/")
 
 @app.route("/like_posts" , methods = ["POST"])
 @login_required
