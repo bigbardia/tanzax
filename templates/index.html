@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-1">
                         <button type="submit" title="ارسال پست" class="submit-btn">
-                            ارسال پست
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
                 </div>
@@ -92,17 +92,17 @@
                     <div class="row">
                         <div class="col-6">
 
-                            <button  name="submit_comment" value="salam"  class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" >ارسال کامنت</button>
+                            <button  name="submit_comment" value="salam"  class = "submit-btn text-success"  type = "submit" style="margin-top: -10px;" ><i class="fa fa-paper-plane"></i></button>
 
                         </form>
                         </div>
                         <div class="col-6 like-button">
                             <a class="text-warning mx-1" href="{{post.get_post_url}}">
-                                کامنت ها
+                                <i class="fa fa-comment"></i>
                             </a>                             
                             <a class = "text-danger" style="cursor: pointer;" onclick="Like(' {{post._id}} ')">
-                                لایک
-                            </a>> 
+                                <i class="fa fa-heart"></i>
+                            </a>
                             <p  style = "color: red;" id="{{post._id}}">{{ post.likes.__len__() }}</p>
                         </div>
                     </div>
