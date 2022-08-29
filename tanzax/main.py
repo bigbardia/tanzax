@@ -1,216 +1,29 @@
-from functools import wraps
 from flask import (
-    Flask,
+    Blueprint,
     render_template,
     request,
     flash,
     redirect,
-    session,
     url_for,
     send_from_directory,
-    abort
+    abort,
+    current_app
 )
-from flask_wtf import CSRFProtect
 import uuid
 import os
-from flask_sqlalchemy import SQLAlchemy
-from passlib.hash import bcrypt
-from dotenv import load_dotenv
-from time import time
-import pytz
-from xss import escape_javascript
-from datetime import datetime
-
-
-
-load_dotenv()
-
-app = Flask(__name__ ,template_folder="templates",static_folder="static")
-app.secret_key = os.environ.get("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.sqlite3"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
-app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
-app.config["SESSION_COOKIE_HTTPONLY"] = False
-app.config["UPLOAD_FOLDER"] = "uploads"
-app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
-
-db = SQLAlchemy(app = app)
-csrf = CSRFProtect(app=app)
-
-
-file_extensions = {"py","cpp" ,"pas","pdf","png","jpg","gif","jpeg","jfif" , "zip"}
-pic_extensions = {"png" , "jpg","gif","jpeg","jfif"}
-
-
-#-----
-def login_required(func):
-    @wraps(func)
-    def wrapper(*args , **kwargs):
-        if not is_authenticated():
-            logout_user()
-            return redirect("/login")
-        return func(*args , **kwargs)
-    return wrapper
-
-
-
-def is_authenticated()->bool:
-    user_id = session.get("user_id",None)
-    user =User.query.get(user_id)
-    if not user_id or not user:
-        return False
-    return True
-
-
-def login_user(user):
-    session.permanent = True
-    session["user_id"] = user._id
-    
-def logout_user():
-    session.clear()
-    session.permanent = False
-
-def int_time():
-    return int(time())
-
-
-def get_current_user():
-    user_id = session.get("user_id")
-    return User.query.get(user_id)
-
-def allowed_pic_extension(filename : str) -> bool:
-    return "." in filename and filename.rsplit(".",1)[1].lower() in pic_extensions
-
-def allowed_file_extension(filename : str) -> bool:
-    return "." in filename and filename.rsplit(".",1)[1].lower() in file_extensions
-
-def valid_characters(username : str):
-    for i in username:
-        if i not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRTUVWXYZ0123456789":
-            return False
-    return True
-
-def is_aks(file_url : str):
-    extension = file_url.split(".")[1]
-    if extension in pic_extensions:
-        return True
-    return False
-
-def to_datetime(timestamp : int):
-    dt = datetime.fromtimestamp(timestamp , pytz.timezone("Asia/Tehran"))
-    return dt.strftime("%A, %Y-%m-%d %H:%M:%S")
+from tanzax.xss import escape_javascript
+from tanzax import db
+from tanzax.models import  *
+from tanzax.utils import *
 
 
 
 
-app.jinja_env.globals.update(current_user = get_current_user)
-app.jinja_env.globals.update(to_datetime = to_datetime)
-app.jinja_env.globals.update(is_aks = is_aks)
-app.jinja_env.globals.update(is_authenticated = is_authenticated)
-#-----------------------------------------------------------
-#MODELS
-
-class User(db.Model):
-
-    __tablename__ = "users"
-
-    _id = db.Column(db.Integer , primary_key = True)
-    username = db.Column(db.String(50), nullable = False)
-    hashed_password = db.Column(db.String(50) , nullable = False)
-    timestamp = db.Column(db.Integer, default=int_time , nullable = False)
-    bio = db.Column(db.Text , nullable = True)
-    image_url = db.Column(db.String(100), nullable = True , default = "/media/default.jpeg")
-    last_ping = db.Column(db.Integer , nullable = True , default = int_time)
-    posts = db.relationship("Post",backref = "author")
-    comments = db.relationship("Comment" , backref = "commenter")
-    likes = db.relationship("Like" , backref = "liker")
-
-    def __init__(self , username , password , bio="" , image_url="/media/default.jpeg"):
-        self.username = username
-        self.hashed_password = self.hash_password(password)        
-        self.bio = bio
-        self.image_url = image_url
-    
-    def __repr__(self):
-        return f"<User {self.username}>"
-
-    @property
-    def get_profile_url(self):
-        return f"/profile/{self.username}"
-
-    def hash_password(self,password):
-        return bcrypt.hash(password)
-    
-    def verify_password(self , password) -> bool:
-        return bcrypt.verify(password , self.hashed_password)
+views = Blueprint("views" , __name__ , template_folder="templates" , static_folder="static" )
 
 
-class Post(db.Model):
 
-    __tablename__ = "posts"
-
-    _id = db.Column(db.Integer, primary_key = True )
-    title = db.Column(db.String(32), nullable = False)
-    text = db.Column(db.String(512), nullable = True )
-    file_url = db.Column(db.String(512) , nullable = True)
-    author_id = db.Column(db.Integer,db.ForeignKey("users._id") , nullable = False)
-    timestamp = db.Column(db.Integer , default = int_time , nullable = False)
-    comments = db.relationship("Comment" , backref = "post")
-    likes = db.relationship("Like" , backref = "post" )
-    like_counter = db.Column(db.Integer , default = 0 , nullable = False)
-
-    @property
-    def get_post_url(self):
-        return f"/posts/{self._id}"
-
-
-    def __init__(self , title , text=None , file_url = None):
-        self.title = title
-        self.text = text
-        self.file_url = file_url
-
-    def __repr__(self):
-        return f"<Post {self.title}>"
-
-class Comment(db.Model):
-
-    __tablename__ = "comments"
-
-    _id = db.Column(db.Integer , primary_key = True)
-    text = db.Column(db.String(256) , nullable = False)
-    post_id = db.Column(db.Integer, db.ForeignKey("posts._id") , nullable = False)
-    commenter_id = db.Column(db.Integer , db.ForeignKey("users._id") , nullable = False)
-    timestamp = db.Column(db.Integer , default = int_time , nullable = False)
-
-    def __repr__(self):
-        return f"<Comment {self.commenter , self.post}>"
-
-    def __init__(self , text , post , commenter):
-        self.text =text
-        self.post = post
-        self.commenter = commenter
-
-class Like(db.Model):
-    
-    __tablename__ = "likes"
-    _id = db.Column(db.Integer , primary_key = True)
-    timestamp = db.Column(db.Integer , default = int_time , nullable = False)
-    post_id = db.Column(db.Integer , db.ForeignKey("posts._id") , nullable = False)
-    liker_id = db.Column(db.Integer , db.ForeignKey("users._id") , nullable = False)
-    
-    def __init__(self, post , liker):
-        self.post = post
-        self.liker = liker
-
-    def __repr__(self):
-        return f"<Like {self.liker} , {self.post}>"
-
-
-#----------------
-#ROUTES
-
-
-@app.route("/signup" , methods = ["GET","POST"])
+@views.route("/signup" , methods = ["GET","POST"])
 def signup():
     if request.method == "GET":
         return render_template("signup.html")
@@ -246,7 +59,7 @@ def signup():
         login_user(user)
         return redirect("/")
     
-@app.route("/login" , methods = ["GET","POST"])
+@views.route("/login" , methods = ["GET","POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
@@ -268,7 +81,7 @@ def login():
         return redirect("/")
 
 
-@app.route("/profile/<username>")
+@views.route("/profile/<username>")
 def profile_view(username):
     if request.method == "GET":
         user = User.query.filter_by(username = username).first()
@@ -284,16 +97,16 @@ def profile_view(username):
         if current_time - user.last_ping  <  20:
             context["online"] = True
 
-        context["bio_url"] = url_for("profile_view",username = username) +"?html=true"
+        context["bio_url"] = url_for("views.profile_view",username = username) +"?html=true"
         return render_template("profile_view.html" , **context)
 
-@app.route("/logout")
+@views.route("/logout")
 def logout():
     logout_user()
     return redirect("/login")
 
 
-@app.route("/profile" , methods = ["GET","POST"])
+@views.route("/profile" , methods = ["GET","POST"])
 @login_required
 def edit_profile():
 
@@ -313,7 +126,7 @@ def edit_profile():
                 flash("پسوند فیل قابل قبول نیست")
                 return redirect("/profile")
             file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
-            file.save(os.path.join(app.config["UPLOAD_FOLDER"] , file.filename))
+            file.save(os.path.join(current_app.config["UPLOAD_FOLDER"] , file.filename))
             image_url = f"/media/{file.filename}"
 
 
@@ -323,7 +136,7 @@ def edit_profile():
         return redirect("/profile")
 
 
-@app.route("/ping")
+@views.route("/ping")
 def ping():
     user = get_current_user()
     user.last_ping = int_time()
@@ -331,13 +144,13 @@ def ping():
     return {"message" : "success"}
 
 
-@app.route('/media/<name>')
+@views.route('/media/<name>')
 def view_file(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+    return send_from_directory("uploads", name)
 
 
 
-@app.route("/" , methods = ["GET","POST"])
+@views.route("/" , methods = ["GET","POST"])
 @login_required
 def index():
     if request.method == "GET":
@@ -408,7 +221,7 @@ def index():
                     error_msgs.append("فایل درست نیست")
                 if len(error_msgs) == 0:
                     file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
-                    file.save(os.path.join(app.config["UPLOAD_FOLDER"] , file.filename))
+                    file.save(os.path.join(current_app.config["UPLOAD_FOLDER"] , file.filename))
                     file_url = f"/media/{file.filename}"
 
             if len(error_msgs) > 0:
@@ -422,7 +235,7 @@ def index():
             db.session.commit()
             return redirect("/")
 
-@app.route("/like_posts" , methods = ["POST"])
+@views.route("/like_posts" , methods = ["POST"])
 @login_required
 def like_post():
     request_xhr_key = request.headers.get("X-Requested-With" , None)
@@ -444,7 +257,7 @@ def like_post():
     abort(404)
 
 
-@app.route("/posts/<_id>" , methods = ["GET","POST"]) 
+@views.route("/posts/<_id>" , methods = ["GET","POST"]) 
 def view_post(_id):
     if request.method == "GET":
         context = {
@@ -480,11 +293,7 @@ def view_post(_id):
 
 
 
-@app.errorhandler (404)
+@views.errorhandler (404)
 def page_not_found (e):
     return render_template("404.html"), 404
 
-
-if __name__ == "__main__":
-    db.create_all()
-    app.run(debug = False , threaded = True)
