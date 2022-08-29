@@ -17,8 +17,10 @@ from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import bcrypt
 from dotenv import load_dotenv
 from time import time
-from time import strftime , localtime
+import pytz
 from xss import escape_javascript
+from datetime import datetime
+
 
 
 load_dotenv()
@@ -95,7 +97,8 @@ def is_aks(file_url : str):
     return False
 
 def to_datetime(timestamp : int):
-    return strftime("%A, %Y-%m-%d %H:%M:%S" ,localtime(timestamp))
+    dt = datetime.fromtimestamp(timestamp , pytz.timezone("Asia/Tehran"))
+    return dt.strftime("%A, %Y-%m-%d %H:%M:%S")
 
 
 
