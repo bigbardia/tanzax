@@ -87,3 +87,8 @@ textarea {
     display: inline;
 }
 
+@media (min-width: 1200px) {
+    .container-low {
+        max-width: 970px;
+    }
+}
