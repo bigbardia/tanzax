@@ -2,3 +2,6 @@
 database.sqlite3
 __pycache__
 tanzax/uploads/ce5af040d6bd45ac99605b1842cfd6a3.jpg
+tanzax.wsgi
+user.sqlite3
+
