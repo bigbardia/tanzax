@@ -12,7 +12,7 @@ def create_app():
     app = Flask(__name__)
 
     app = Flask(__name__ ,template_folder="templates",static_folder="static")
-    app.secret_key = "8952f5ca7c1244f0b6f9e4090cacd12a"
+    app.secret_key = os.getenv("SECRET_KEY")
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////var/www/html/tanzax/user.sqlite3"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
     app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
