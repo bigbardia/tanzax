@@ -12,10 +12,10 @@
 
     {% include 'navbar.html' %}
 
-    <div class="container bg-light mt-5 mb-5" style="border-radius: 15px;">
+    <div class="container bg-dark mt-5 mb-5" style="border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
         <div class="row">
             <div class="col-md-3 border-right">
-                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><a href=""><img class="rounded-circle mt-5" width="150px" src="{{ user.image_url }}"> </a><span class="font-weight-bold my-3">{{ user.username }}</span></div>
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><a href=""><img class="rounded-circle mt-5" width="150px" src="{{ user.image_url }}"> </a><span class="font-weight-bold my-3 text-light">{{ user.username }}</span></div>
             </div>
             <div class="col-md-5 border-right">
                 <div class="p-3 py-5">
@@ -29,15 +29,19 @@
                             
                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
 
-                            <textarea name="plain_text" id="" placeholder="بایوگرافی" class="form-control my-3" style="direction: ltr;">
+                            <label for="biog" class="text-light">
+                                بایوگرافی
+                            </label>
+
+                            <textarea name="plain_text" id="biog" placeholder="بایوگرافی" class="form-control my-3" style="direction: ltr;">
                                 {{ user.bio }}
                             </textarea>
 
-                            <p>
+                            <label class="text-light" for="file_selector">
                                 انتخاب تصویر
-                            </p>
+                            </label>
 
-                            <input type="file" class="my-3" name = "pic"  id="file_selector" />
+                            <input type="file" class="choose-image" name = "pic"  id="file_selector" />
 
                             <button type="button" class="btn btn-primary " id="button">
                                 ثبت تغییرات
@@ -73,7 +77,7 @@
 
     <br><br><br><br><br>
     <br><br><br>
-    <br><br><br>
+    <br><br>
         
         <script src="/static/js/profile.js"></script>
 

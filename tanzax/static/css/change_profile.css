@@ -9,6 +9,10 @@
     border: none
 }
 
+.choose-image {
+    margin-bottom: 20px;
+}
+
 .profile-button:hover {
     background: #292b81
 }

@@ -13,11 +13,11 @@ def create_app():
 
     app = Flask(__name__ ,template_folder="templates",static_folder="static")
     app.secret_key = os.getenv("SECRET_KEY")
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////var/www/html/tanzax/user.sqlite3"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/user.sqlite3"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
     app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 14 #2 weeks
     app.config["SESSION_COOKIE_HTTPONLY"] = False
-    app.config["UPLOAD_FOLDER"] = "/var/www/html/tanzax/tanzax/uploads"
+    app.config["UPLOAD_FOLDER"] = "/tmp/tanzax/uploads"
     app.config['MAX_CONTENT_LENGTH'] = 20 * 1000 * 1000 # 20 megabytes
 
     app.register_blueprint(views)
