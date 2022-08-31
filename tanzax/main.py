@@ -126,7 +126,7 @@ def edit_profile():
                 flash("پسوند فیل قابل قبول نیست")
                 return redirect("/profile")
             file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
-            file.save(os.path.join(current_app.config["UPLOAD_FOLDER"] , file.filename))
+            file.save(os.path.join(current_app.config["UPLOAD_FOLDER"],file.filename))    #CHANGED HERE
             image_url = f"/media/{file.filename}"
 
 
@@ -221,7 +221,7 @@ def index():
                     error_msgs.append("فایل درست نیست")
                 if len(error_msgs) == 0:
                     file.filename = uuid.uuid4().hex + "." + file.filename.rsplit(".",1)[1]
-                    file.save(os.path.join(current_app.config["UPLOAD_FOLDER"] , file.filename))
+                    file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], file.filename)) #CHANGED HEE
                     file_url = f"/media/{file.filename}"
 
             if len(error_msgs) > 0:
@@ -293,7 +293,7 @@ def view_post(_id):
 
 
 
-@views.errorhandler (404)
+@views.app_errorhandler (404)
 def page_not_found (e):
     return render_template("404.html"), 404
 
